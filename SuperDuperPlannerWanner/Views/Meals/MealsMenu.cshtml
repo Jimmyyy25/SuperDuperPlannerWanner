@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Delete";
+}
+
+    <div id="MainContainer" class="MainContainerStyle mt-3 container">
+        <div id="HeaderContainer" class="mb-1">
+            <div class="justify-content-center">
+                <h1>Meals Menu</h1>
+            </div>
+        </div>
+        <div id="BodyContainer">
+            <div class="btn bg-info m-2 card justify-content-center" style="height: 10rem;" onclick="location.href='@Url.Action("ViewMealPlans", "Meals" )'">
+                <h3 class="text-dark">Meal Plans</h3>
+            </div>
+            <div class="btn bg-warning m-2 card justify-content-center" style="height: 10rem;" onclick="location.href='@Url.Action("ViewMeals", "Meals" )'">
+                <h3 class="text-dark">Meal Catalogue</h3>
+            </div>
+        </div>
+    </div>

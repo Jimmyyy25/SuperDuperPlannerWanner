@@ -1,0 +1,4 @@
+CRUD plans seems ok
+CRUD ingredients and meals are going
+Need to figure out how to post the checkboxes, and then sort of saving stuff to db linked
+  - currently trying to pass kvp list of ingredients and bools but list won't work
