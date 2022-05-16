@@ -173,7 +173,7 @@ namespace SuperDuperPlannerWanner.Controllers
 
         public async Task<IActionResult> ChooseIngredients()
         {
-            List<Ingredient, bool> listIngredients;
+            List<Ingredient> listIngredients;
 
             if (_iMealId == null)
             {
@@ -183,39 +183,40 @@ namespace SuperDuperPlannerWanner.Controllers
             return View(await _context.Ingredient.ToListAsync());
         }
 
-        [HttpPost, ActionName("ChooseIngredients")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChooseIngredients()
-        {
-            if (_iMealId == null)
-            {
-                return NotFound();
-            }
+        
+        //[HttpPost, ActionName("ChooseIngredients")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ChooseIngredients()
+        //{
+        //    if (_iMealId == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    // TODO: put in session or cache
-                    List<Ingredient> listIngredients = await _context.Ingredient.ToListAsync()
-                    _context.Update(meal);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MealExists(meal.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            // TODO: put in session or cache
+        //            List<Ingredient> listIngredients = await _context.Ingredient.ToListAsync();
+        //            _context.Update(meal);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!MealExists(meal.Id))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
 
-            return View(meal);
-        }
+        //    return View(meal);
+        //}
     }
 }
