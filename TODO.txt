@@ -2,3 +2,9 @@ CRUD plans seems ok
 CRUD ingredients and meals are going
 Need to figure out how to post the checkboxes, and then sort of saving stuff to db linked
   - currently trying to pass kvp list of ingredients and bools but list won't work
+
+
+  Useful links:
+
+  Data annotations - https://www.c-sharpcorner.com/UploadFile/mscratnesh/data-annotation-in-Asp-Net-mvc/
+  Select Lists - https://stackoverflow.com/questions/34624034/select-tag-helper-in-asp-net-core-mvc

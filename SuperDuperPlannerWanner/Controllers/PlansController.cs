@@ -30,24 +30,18 @@ namespace SuperDuperPlannerWanner.Controllers
         // GET: Plans
         public async Task<IActionResult> ViewPlans()
         {
-            // get meal plans from db
-            List<Plan> Plans = await _context.Plan.Where(plan => plan.TypeId == _iPlanTypeId).ToListAsync();
+            List<Plan> Plans = new List<Plan>();
 
-            PlanType planType = (PlanType)_iPlanTypeId;
-
-            switch (planType)
+            if (_iPlanTypeId == null)
             {
-                case PlanType.Meal:
-                    ViewData["PlanType"] = "Meal";
-                    break;
-                case PlanType.Activity:
-                    ViewData["PlanType"] = "Activity";
-                    break;
-                case PlanType.Holiday:
-                    ViewData["PlanType"] = "Holiday";
-                    break;
-                default:
-                    break;
+                PlanType planType = (PlanType)_iPlanTypeId;
+
+                // get selected plans from db
+                Plans = await _context.Plan.Where(plan => plan.TypeId == planType).ToListAsync();
+            }
+            else
+            {
+                Plans = await _context.Plan.ToListAsync();
             }
 
             return View(Plans);
@@ -74,7 +68,22 @@ namespace SuperDuperPlannerWanner.Controllers
         // GET: Plans/Create
         public IActionResult CreatePlan()
         {
-            return View();
+            CreatePlanViewModel vm = new CreatePlanViewModel();
+
+            List<SelectListItem> planTypes = new List<SelectListItem>();
+
+             Array james = Enum.GetValues(typeof(PlanType));
+
+            foreach (PlanType item in Enum.GetValues(typeof(PlanType)))
+            {
+                planTypes.Add(
+                    new SelectListItem { Text = item.ToString(), Value = ((int)item).ToString() }
+                );
+            }
+
+            vm.PlanTypes = planTypes;
+
+            return View(vm);
         }
 
         // POST: Plans/Create
@@ -163,7 +172,7 @@ namespace SuperDuperPlannerWanner.Controllers
         }
 
         // POST: Plans/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost, ActionName("DeletePlan")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -64,6 +64,25 @@ namespace SuperDuperPlannerWanner
 
             app.UseAuthorization();
 
+            // Creating db from nothing - If you have created the migrations, you could execute them in the Startup.cs as follows.
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<SuperDuperPlannerWannerContext>();
+                context.Database.Migrate();
+            }
+
+            /*
+             * The above will create the database and the tables using your added migrations.
+
+                If you're not using Entity Framework Migrations, and instead just need your DbContext model created exactly as it is in your context class at first run, then you can use:
+             * 
+                     * using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+              {
+                    var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                    context.Database.EnsureCreated();
+              }
+              */
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
