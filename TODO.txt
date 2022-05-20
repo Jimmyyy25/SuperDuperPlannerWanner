@@ -1,10 +1,17 @@
 CRUD plans seems ok
 CRUD ingredients and meals are going
-Need to figure out how to post the checkboxes, and then sort of saving stuff to db linked
-  - currently trying to pass kvp list of ingredients and bools but list won't work
+When choosing ingredients need to pop checkboxes and update links if changed - IN PROGRESS - See MealsController MealDetails
 
 
-  Useful links:
 
-  Data annotations - https://www.c-sharpcorner.com/UploadFile/mscratnesh/data-annotation-in-Asp-Net-mvc/
-  Select Lists - https://stackoverflow.com/questions/34624034/select-tag-helper-in-asp-net-core-mvc
+Useful links:
+
+Data annotations - https://www.c-sharpcorner.com/UploadFile/mscratnesh/data-annotation-in-Asp-Net-mvc/
+Select Lists - https://stackoverflow.com/questions/34624034/select-tag-helper-in-asp-net-core-mvc
+EF Core - https://docs.microsoft.com/en-us/ef/core/
+
+
+Useful Hotkeys:
+
+- Ctrl + r, Ctrl + e - auto generates getters nd setters for multi selected properties
+- typing prop/propg and hitting tab twice triggers getter/setter snippet

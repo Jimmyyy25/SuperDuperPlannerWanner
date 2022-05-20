@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SuperDuperPlannerWanner.Data;
 using SuperDuperPlannerWanner.Models;
+using SuperDuperPlannerWanner.Models.ViewModels;
 
 namespace SuperDuperPlannerWanner.Controllers
 {
@@ -40,25 +41,6 @@ namespace SuperDuperPlannerWanner.Controllers
             return View(await _context.Meal.ToListAsync());
         }
 
-        
-
-        // GET: Meals1/Details/5
-        public async Task<IActionResult> MealDetails(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var meal = await _context.Meal
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (meal == null)
-            {
-                return NotFound();
-            }
-
-            return View(meal);
-        }
 
         // GET: Meals1/Create
         public IActionResult CreateMeal()
@@ -132,7 +114,7 @@ namespace SuperDuperPlannerWanner.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ViewMeals));
             }
             return View(meal);
         }
@@ -171,52 +153,107 @@ namespace SuperDuperPlannerWanner.Controllers
             return _context.Meal.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> ChooseIngredients()
+        // GET: Meals1/Details/5
+        public async Task<IActionResult> MealDetails(int? id)
         {
+            // Check for Meal
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Get Meal
+            MealDetailsViewModel vm = new MealDetailsViewModel();
+
+            Meal meal = await _context.Meal
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (meal == null)
+            {
+                return NotFound();
+            }
+
+            vm.Meal = meal;
+
+            /*
+             * Currently getting full ingredients list and list that have been selected (bound)
+             * Ideally need to get both these at the same time i.e. IsLinked = true if join is there or false if not but
+             * can't figure that bit out easily - worth lookiung into though
+             * Going to do Selected Items list and Unselected Items list but need to strip out the crossover duplicates first
+             * Also need to think about how to handle quantities of items in stock and required for each meal - IMPORTANT
+             * 
+             */
+
+            // Get Ingredients
             List<Ingredient> listIngredients;
 
+            listIngredients = await _context.Ingredient.ToListAsync();
+
+            IEnumerable<MealIngredientBind> MIBList = from mealIngredientLink in _context.Set<MealIngredientLink>()
+                        join ingredient in _context.Set<Ingredient>()
+                            on mealIngredientLink.IngredientId equals ingredient.Id
+                        select new MealIngredientBind {
+                            Ingredient = new Ingredient
+                            {
+                                Id = ingredient.Id,
+                                Name = ingredient.Name,
+                                Quantity = ingredient.Quantity,
+                                Price = ingredient.Price,
+                                IngredientTypeId = ingredient.IngredientTypeId
+                            },
+                            IsLinked = true
+                        };
+
+            vm.Ingredients = MIBList.ToList();
+
+            return View(meal);
+        }
+
+        [HttpPost, ActionName("ChooseIngredients")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChooseIngredients(MealDetailsViewModel vm)
+        {
             if (_iMealId == null)
             {
                 return NotFound();
             }
 
-            return View(await _context.Ingredient.ToListAsync());
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Get Links + clear, then create new ones needed
+                    // TODO: do in one proc
+                    _context.MealIngredientLink.RemoveRange(_context.MealIngredientLink.Where<MealIngredientLink>(mil => mil.MealId == _iMealId));
+
+                    List<MealIngredientBind> listSelectedIngredients = vm.Ingredients.Where(i => i.IsLinked == true).ToList();
+
+                    foreach (MealIngredientBind item in vm.Ingredients)
+                    {
+                        MealIngredientLink mealIngredientLink = new MealIngredientLink
+                        {
+                            MealId = (int)_iMealId,
+                            IngredientId = item.Ingredient.Id
+                        };
+
+                        _context.Add(mealIngredientLink);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!MealExists((int)_iMealId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(MealDetails), _iMealId);
         }
-
-        
-        //[HttpPost, ActionName("ChooseIngredients")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> ChooseIngredients()
-        //{
-        //    if (_iMealId == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            // TODO: put in session or cache
-        //            List<Ingredient> listIngredients = await _context.Ingredient.ToListAsync();
-        //            _context.Update(meal);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!MealExists(meal.Id))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    return View(meal);
-        //}
     }
 }

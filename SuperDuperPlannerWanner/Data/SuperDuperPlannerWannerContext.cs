@@ -14,8 +14,15 @@ namespace SuperDuperPlannerWanner.Data
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MealIngredientLink>()
+                .HasKey(mik => new { mik.MealId, mik.IngredientId });
+        }
+
         public DbSet<SuperDuperPlannerWanner.Models.Meal> Meal { get; set; }
         public DbSet<SuperDuperPlannerWanner.Models.Ingredient> Ingredient { get; set; }
+        public DbSet<SuperDuperPlannerWanner.Models.MealIngredientLink> MealIngredientLink { get; set; }
         public DbSet<SuperDuperPlannerWanner.Models.Plan> Plan { get; set; }
         public DbSet<SuperDuperPlannerWanner.Models.PlanItem> PlanItem { get; set; }
         public DbSet<SuperDuperPlannerWanner.Models.PlanItemLink> PlanItemLink { get; set; }
